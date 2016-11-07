@@ -20,16 +20,16 @@ from webbrowser import open_new
 def download_img(url_image):
     name = re.findall('.*/(.+)', url_image)[0]
     name = name.split('?')[0]
+    try:
+        os.mkdir('UsersPhoto')
+    except OSError:
+        pass
     if name not in os.listdir(path='UsersPhoto\\'):
         try:
             with urlopen(url_image) as page:
                 logo = page.read()
         except (URLError, HTTPError):
             return None
-        try:
-            os.mkdir('UsersPhoto')
-        except OSError:
-            pass
         image = open('UsersPhoto\\' + name, 'wb')
         image.write(logo)
         image.close()

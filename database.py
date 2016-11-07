@@ -88,8 +88,11 @@ class DataBase:
         with self.lock:
             conn = sqlite3.connect(self.file_name)
             cur = conn.cursor()
-            list_users = [x[0] for x in cur.execute(
-                'SELECT name FROM users_data ORDER BY name')]
+            try:
+                list_users = [x[0] for x in cur.execute(
+                    'SELECT name FROM users_data ORDER BY name')]
+            except sqlite3.OperationalError:
+                return []
             conn.close()
             return list_users
 

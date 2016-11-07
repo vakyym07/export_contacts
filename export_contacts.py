@@ -110,7 +110,7 @@ class Contacts(QWidget):
     def __init__(self, db):
         self.dic_wind = {}
         self.dic_button = {}
-        self.list_error_wind = {}
+        self.dic_err_win = {}
         self.layout = None
         self.mygroupbox = QGroupBox('Contacts list')
         self.myform = QFormLayout()
@@ -128,8 +128,8 @@ class Contacts(QWidget):
             if sender.text() == '&Facebook':
                 error = self.db.create(api=sender.text())
         if error is not None:
-            self.list_error_wind[error] = ErrorWindow(error)
-            self.list_error_wind[error].init_ui()
+            self.dic_err_win[error] = ErrorWindow(error)
+            self.dic_err_win[error].init_ui()
         else:
             for friend in self.db.get_list_users():
                 button = self.create_button(friend)
@@ -157,11 +157,13 @@ class Contacts(QWidget):
         return button
 
     def import_all_contacts(self):
-        for contact in self.db.get_list_users():
-            contact_data = self.db.get_user_inf(contact)
-            self.google_api.create_contact(
-                self.google_api.create_xml(contact_data))
-        open_new('https://contacts.google.com')
+        list_users = self.db.get_list_users()
+        if len(list_users) != 0:
+            open_new('https://contacts.google.com')
+            for contact in list_users:
+                contact_data = self.db.get_user_inf(contact)
+                self.google_api.create_contact(
+                    self.google_api.create_xml(contact_data))
 
     def redrawing(self):
         self.clear_window()

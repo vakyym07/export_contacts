@@ -90,7 +90,7 @@ class Google:
         address = Element('gd:postalAddress')
         address.set('rel', 'http://schemas.google.com/g/2005#work')
         address.set('primary', 'true')
-        address.text = data['city'] + ',\n' + data['country']
+        address.text = data['city'] + '\n' + data['country']
         root.append(address)
 
         link = Element('link')

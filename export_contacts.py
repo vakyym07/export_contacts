@@ -8,10 +8,10 @@ from PyQt5.QtWidgets import QWidget, QMainWindow, \
     QAction, QFormLayout, QScrollArea, \
     QDesktopWidget, QGroupBox, QPushButton, QVBoxLayout, \
     QLabel, QGridLayout, QHBoxLayout, QLineEdit, QApplication, qApp, \
-    QInputDialog
+    QInputDialog, QWidgetItem
 from PyQt5.QtGui import QPainter, QColor, QFont, QPixmap
 from PyQt5.QtCore import Qt
-from database import DataBase
+from database import DataBase, download_data
 from google import Google
 from threading import Thread
 from webbrowser import open_new
@@ -124,9 +124,18 @@ class Contacts(QWidget):
         error = None
         if sender is not None:
             if sender.text() == '&VK':
-                error = self.db.create(api=sender.text())
+                if not self.db.db_exists():
+                    error = self.db.create(download_data(sender.text()))
+                else:
+                    error = self.db.update_database(
+                        download_data(sender.text()))
             if sender.text() == '&Facebook':
-                error = self.db.create(api=sender.text())
+                if not self.db.db_exists():
+                    error = self.db.create(download_data(sender.text()))
+                else:
+                    error = self.db.update_database(
+                        download_data(sender.text()))
+
         if error is not None:
             self.dic_err_win[error] = ErrorWindow(error)
             self.dic_err_win[error].init_ui()
@@ -197,14 +206,16 @@ class Window(QWidget):
         self.parent_window = parent_window
         self.p_button = None
         self.grid = QGridLayout()
+        self.form = QFormLayout()
         self.google_api = google_api
         super().__init__()
 
     def init_ui(self):
-        self.clear_window()
+        self.clear_layout(self.grid)
         self.p_button = self.sender()
         vbox_title = QVBoxLayout()
         vbox_inf = QVBoxLayout()
+
         for title in self.titles:
             label = QLabel(title)
             vbox_title.addWidget(label)
@@ -256,21 +267,16 @@ class Window(QWidget):
         self.inf_friend = inf_friend
 
     def clear_layout(self, layout):
-        for i in range(layout.count()):
-            if layout.itemAt(i) is not None:
-                layout.itemAt(i).widget().setParent(None)
+        for i in reversed(range(layout.count())):
+            item = layout.itemAt(i)
+            if isinstance(item, QWidgetItem):
+                item.widget().close()
+            else:
+                self.clear_layout(item.layout())
+            layout.removeItem(item)
 
-    def clear_window(self):
-        for i in range(self.grid.count()):
-            if self.grid.itemAt(i) is not None:
-                if self.grid.itemAt(i).layout() is not None:
-                    self.clear_layout(self.grid.itemAt(i).layout())
-                    self.grid.itemAt(i).layout().setParent(None)
-                if self.grid.itemAt(i).widget() is not None:
-                    self.grid.itemAt(i).widget().setParent(None)
-
-    def redrawing(self):
-        self.clear_window()
+    def repaint(self):
+        self.clear_layout(self.grid)
         self.init_ui()
 
     def edit_inf_dialog(self):
@@ -327,7 +333,7 @@ class EditWindow(QWidget):
 
         self.setLayout(grid)
 
-        self.setGeometry(300, 300, 350, 300)
+        self.setGeometry(900, 300, 350, 300)
         self.setWindowTitle('Edit information')
         self.show()
 
@@ -353,7 +359,7 @@ class EditWindow(QWidget):
         else:
             user_inf = self.base_widget.db.get_user_inf(self.edit_user)
         self.parent_window.change_data(user_inf['name'], user_inf)
-        self.parent_window.redrawing()
+        self.parent_window.repaint()
 
 
 class ErrorWindow(QWidget):

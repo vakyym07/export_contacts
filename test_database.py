@@ -14,7 +14,7 @@ class Test(unittest.TestCase):
 
     def test_insert_user(self):
         user_data = {'name': 'Artyom', 'bdate':
-            '03.06.1997', 'country': 'Russia'}
+                     '03.06.1997', 'country': 'Russia'}
         resp = self.db.insert_user(user_data)
         assert True, resp
 
@@ -34,31 +34,33 @@ class Test(unittest.TestCase):
         assert True, inf_user.get('instagram') is not None
 
     def test_delete_user(self):
-        user = {'name': 'Artyom Soldatenko', 'email': 'vakyym07@gmail.com', 'bdate': '3.6.1997'}
+        user = {'name': 'Artyom Soldatenko',
+                'email': 'vakyym07@gmail.com', 'bdate': '3.6.1997'}
         self.db.insert_user(user)
-        print(self.db._output())
         self.db.delete_user(user['name'])
         res = self.db.contains_user(user['name'])
-        print(self.db._output())
-        res1 = self.db.insert_user(user)
-        print(self.db._output())
         assert True, not res
 
     def test_is_same_user_bdate(self):
-        old_user = {'name': 'Artyom Soldatenko', 'email': 'vakyym07@gmail.com', 'bdate': '03.06.1997'}
-        user = {'name': 'Artyom Soldatenko', 'email': 'vakyym07@gmail.com', 'bdate': '3.6.1997'}
+        old_user = {'name': 'Artyom Soldatenko',
+                    'email': 'vakyym07@gmail.com', 'bdate': '03.06.1997'}
+        user = {'name': 'Artyom Soldatenko',
+                'email': 'vakyym07@gmail.com', 'bdate': '3.6.1997'}
         res = self.db.is_same_users(old_user, user)
         assert True, res
 
     def test_is_same_user_not_inf(self):
         old_user = {'name': 'Artyom Soldatenko', 'email': '', 'bdate': ''}
-        user = {'name': 'Artyom Soldatenko', 'email': 'vakyym07@gmail.com', 'bdate': '3.6.1997'}
+        user = {'name': 'Artyom Soldatenko',
+                'email': 'vakyym07@gmail.com', 'bdate': '3.6.1997'}
         res = self.db.is_same_users(old_user, user)
         assert True, res
 
     def test_is_same_user_error(self):
-        old_user = {'name': 'Artyom Soldatenko', 'email': '', 'bdate': '12.12.1998'}
-        user = {'name': 'Artyom Soldatenko', 'email': 'vakyym07@gmail.com', 'bdate': '3.6.1997'}
+        old_user = {'name': 'Artyom Soldatenko',
+                    'email': '', 'bdate': '12.12.1998'}
+        user = {'name': 'Artyom Soldatenko',
+                'email': 'vakyym07@gmail.com', 'bdate': '3.6.1997'}
         res = self.db.is_same_users(old_user, user)
         assert True, not res
 
@@ -70,7 +72,8 @@ class Test(unittest.TestCase):
     def test_merge_users(self):
         old_user = {'name': 'Artyom Soldatenko', 'email': '', 'bdate': ''}
         self.db.insert_user(old_user)
-        user = {'name': 'Artyom Soldatenko', 'email': 'vakyym07@gmail.com', 'bdate': '3.6.1997'}
+        user = {'name': 'Artyom Soldatenko',
+                'email': 'vakyym07@gmail.com', 'bdate': '3.6.1997'}
         self.db.merge_user(old_user, user)
         res = self.db.contains_user('Artyom Soldatenko')
         new_user = self.db.get_user_inf('Artyom Soldatenko')

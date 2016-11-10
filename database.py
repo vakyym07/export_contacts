@@ -27,6 +27,10 @@ def download_data(api):
         return fbapi.get_friends()
 
 
+def compare(x, y):
+    return collections.Counter(x) == collections.Counter(y)
+
+
 class DataBase:
     def __init__(self):
         self.columns = ['name', 'bdate', 'city', 'country', 'home_phone',
@@ -66,16 +70,14 @@ class DataBase:
         if data[1] is not None:
             return data[1]
         for user in data[0]:
-            if user['name'] == 'Alex Stafeev':
-                flag = True
             if self.contains_user(user['name']):
                 old_user = self.get_user_inf(user['name'])
                 if self.is_same_users(old_user, user):
                     self.merge_user(old_user, user)
-            elif self.contains_user(user['name'].split(' ')[1] +
-                                    ' ' + user['name'].split(' ')[0]):
-                name = user['name'].split(' ')[1] + \
-                       ' ' + user['name'].split(' ')[0]
+            elif self.contains_user(user['name'].split(' ')[1] + ' '
+                                    + user['name'].split(' ')[0]):
+                name = user['name'].split(' ')[1] + ' ' \
+                    + user['name'].split(' ')[0]
                 old_user = self.get_user_inf(name)
                 if self.is_same_users(old_user, user):
                     self.merge_user(old_user, user)
@@ -161,7 +163,6 @@ class DataBase:
         if data_user1['bdate'] != '' and data_user2.get('bdate') is not None:
             bdate1 = [int(e) for e in data_user1['bdate'].split('.')]
             bdate2 = [int(e) for e in data_user2['bdate'].split('.')]
-            compare = lambda x, y: collections.Counter(x) == collections.Counter(y)
             if compare(bdate1, bdate2):
                 is_bdate = True
         else:

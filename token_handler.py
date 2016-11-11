@@ -26,7 +26,7 @@ class TokenHandler:
                                  self._api, self.name_api))
 
         # This function will block until it receives a request
-        http_server.socket.settimeout(10)
+        http_server.socket.settimeout(40)
         http_server.handle_request()
         try:
             return http_server.access_token

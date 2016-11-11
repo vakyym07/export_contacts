@@ -44,6 +44,9 @@ class DataBase:
         self.file_name = name
 
     def create(self, data):
+        if data[1] is not None:
+            return data[1]
+
         conn = sqlite3.connect(self.file_name)
         cur = conn.cursor()
 
@@ -54,9 +57,6 @@ class DataBase:
                             email, occupation, picture)''')
         except sqlite3.OperationalError:
             pass
-
-        if data[1] is not None:
-            return data[1]
         list_inf = []
         for user_inf in data[0]:
             list_inf.append(get_users_data(user_inf, self.columns))
